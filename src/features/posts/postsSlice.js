@@ -75,15 +75,15 @@ export const postsSlice = createSlice({
         state.posts[postIndex].reactions[name] += 1;
       }
     },
-    // postsUpdated: (state, action) => {
-    //   state.posts.forEach((postItem) => {
-    //     if (postItem.postID === action.payload.postID) {
-    //       postItem.title = action.payload.title;
-    //       postItem.caption = action.payload.caption;
-    //     }
-    //     return postItem;
-    //   });
-    // },
+    postsUpdated: (state, action) => {
+      state.posts.forEach((postItem) => {
+        if (postItem.postID === action.payload.postID) {
+          postItem.title = action.payload.title;
+          postItem.caption = action.payload.caption;
+        }
+        return postItem;
+      });
+    },
   },
   extraReducers: {
     [fetchPosts.pending]: (state, action) => {
@@ -117,8 +117,10 @@ export const postsSlice = createSlice({
   },
 });
 
-export const { reactionPressed, saveButtonPressed } = postsSlice.actions;
+export const { reactionPressed, saveButtonPressed, postsUpdated } =
+  postsSlice.actions;
 export default postsSlice.reducer;
+
 export const selectAllPosts = (state) => state.posts;
 
 export const selectPostById = (state, postId) => {
