@@ -1,16 +1,19 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { postsUpdated } from "./postsSlice";
+import { editThePost } from "./postsSlice";
 import "../../index.css";
 import { useHistory } from "react-router";
-import { selectPostById } from "./postsSlice";
+import { selectPostForEdit } from "./postsSlice";
+import { unwrapResult } from "@reduxjs/toolkit";
 
 export const EditPost = ({ match }) => {
   const dispatch = useDispatch();
   const history = useHistory();
   const { postID } = match.params;
-  const editablePost = useSelector((state) => selectPostById(state, postID));
+  const editablePost = useSelector((state) => selectPostForEdit(state, postID));
   const [editPost, setEditPost] = useState(editablePost);
+  const [editRequestStatus, setEditRequestStatus] = useState("idle");
+
   if (!editablePost) {
     return (
       <section>
@@ -18,13 +21,19 @@ export const EditPost = ({ match }) => {
       </section>
     );
   }
-  const onSavePostClicked = (editPost) => {
-    return (dispatch) => {
-      if (editPost.title && editPost.caption) {
-        dispatch(postsUpdated(editPost));
+  const onSavePostClicked = async (editPost) => {
+    try {
+      if (editPost.title && editPost.caption && editRequestStatus === "idle") {
+        setEditRequestStatus("pending");
+        const editPostAction = await dispatch(editThePost(editPost));
+        unwrapResult(editPostAction);
         history.push(`/posts/${postID}`);
       }
-    };
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setEditRequestStatus("idle");
+    }
   };
 
   return (
@@ -55,9 +64,7 @@ export const EditPost = ({ match }) => {
           type="button"
           className="button button__primary"
           onClick={() => {
-            dispatch(
-              onSavePostClicked({ ...editPost, date: new Date().toISOString() })
-            );
+            onSavePostClicked({ ...editPost, date: new Date().toISOString() });
           }}
         >
           Save

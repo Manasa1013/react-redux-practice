@@ -13,11 +13,11 @@ export const ViewPost = ({ post }) => {
           <div className="caption"> {post.caption} </div>
           <Reactions post={post} />
           <div>
-            <Link className="button__secondary" to={`/editPost/${post.postID}`}>
+            <Link className="button__Link" to={`/editPost/${post.postID}`}>
               Edit
             </Link>
 
-            <Link className="button__secondary" to="/">
+            <Link className="button__Link" to="/">
               Go back
             </Link>
           </div>

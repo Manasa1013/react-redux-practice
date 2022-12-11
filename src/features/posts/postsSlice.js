@@ -1,4 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { createSelector } from "reselect";
 import axios from "axios";
 const initialState = {
   posts: [],
@@ -7,6 +8,25 @@ const initialState = {
 };
 const apiServerUrl = "https://apiforstocks-1.manasa1998.repl.co";
 
+export const editThePost = createAsyncThunk(
+  "posts/editThePost",
+  async (thePost) => {
+    try {
+      const response = await axios.post(apiServerUrl + "/editposts", {
+        post: thePost,
+      });
+      console.log(
+        response.data.post,
+        thePost,
+        "response.post from editThePost thunk"
+      );
+      return response.data.post;
+    } catch (err) {
+      console.error("couldn't edit and add new post");
+      return { err };
+    }
+  }
+);
 export const addNewPost = createAsyncThunk(
   "posts/addNewPost",
   async (newPost) => {
@@ -55,15 +75,15 @@ export const postsSlice = createSlice({
         state.posts[postIndex].reactions[name] += 1;
       }
     },
-    postsUpdated: (state, action) => {
-      state.posts.forEach((postItem) => {
-        if (postItem.postID === action.payload.postID) {
-          postItem.title = action.payload.title;
-          postItem.caption = action.payload.caption;
-        }
-        return postItem;
-      });
-    },
+    // postsUpdated: (state, action) => {
+    //   state.posts.forEach((postItem) => {
+    //     if (postItem.postID === action.payload.postID) {
+    //       postItem.title = action.payload.title;
+    //       postItem.caption = action.payload.caption;
+    //     }
+    //     return postItem;
+    //   });
+    // },
   },
   extraReducers: {
     [fetchPosts.pending]: (state, action) => {
@@ -83,14 +103,27 @@ export const postsSlice = createSlice({
     [addNewPost.rejected]: (state, action) => {
       state.error = action.payload;
     },
+    [editThePost.fulfilled]: (state, action) => {
+      state.posts = state.posts.forEach((existPost) => {
+        if (existPost.postID === action.payload.postID) {
+          existPost = action.payload;
+        }
+        return existPost;
+      });
+    },
+    [editThePost.rejected]: (state, action) => {
+      state.error = action.payload;
+    },
   },
 });
 
-export const { reactionPressed, saveButtonPressed, postsUpdated } =
-  postsSlice.actions;
+export const { reactionPressed, saveButtonPressed } = postsSlice.actions;
 export default postsSlice.reducer;
 export const selectAllPosts = (state) => state.posts;
 
 export const selectPostById = (state, postId) => {
   return state.posts.posts.find((post) => post.postID === postId);
 };
+export const selectPostForEdit = createSelector((state, postId) => {
+  return state.posts.posts.find((post) => post.postID === postId);
+});
