@@ -13,35 +13,39 @@ import { NotificationsList } from "./features/notifications/NotificationsList";
 function App() {
   return (
     <div className="App">
-      <h1 className="app-header">Sharethoughts</h1>
-      <Switch>
-        <Route
-          exact
-          path="/"
-          render={() => (
-            <React.Fragment>
-              <AddPost />
-              <Posts />
-            </React.Fragment>
-          )}
-        />
-        <Route path={`/posts/:postID`} component={SinglePost} />
-        <Route path={`/editPost/:postID`} component={EditPost} />
-        <Route path={`/users/:userID`} component={UserPage} />
-        <Route path={`/users`} component={Users} />
-        <Route
-          path={`/notifications`}
-          render={() => (
-            <React.Fragment>
-              <NotificationsList />
-            </React.Fragment>
-          )}
-        />
-        <Redirect to="/" />
-      </Switch>
-      <footer className="footer">
+      <header>
+        <h1 className="app-header">Sharethoughts</h1>
+      </header>
+      <main className="main">
+        <Switch>
+          <Route
+            exact
+            path="/"
+            render={() => (
+              <React.Fragment>
+                <AddPost />
+                <Posts />
+              </React.Fragment>
+            )}
+          />
+          <Route path={`/posts/:postID`} component={SinglePost} />
+          <Route path={`/editPost/:postID`} component={EditPost} />
+          <Route path={`/users/:userID`} component={UserPage} />
+          <Route path={`/users`} component={Users} />
+          <Route
+            path={`/notifications`}
+            render={() => (
+              <React.Fragment>
+                <NotificationsList />
+              </React.Fragment>
+            )}
+          />
+          <Redirect to="/" />
+        </Switch>
+      </main>
+      <section className="navigation">
         <Navbar />
-      </footer>
+      </section>
     </div>
   );
 }
